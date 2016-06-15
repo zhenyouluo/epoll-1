@@ -104,7 +104,7 @@ int main(int argc, char **argv)
 	}
 	
 	skfd = listen_socket(argv[1]);
-	if(skfd == -1){ return -1; }
+	if(skfd == -1) return -1; 
 
 	efd = epoll_create1(0);		// epoll create	
 	if(efd == -1){
@@ -112,9 +112,12 @@ int main(int argc, char **argv)
 		perror("epoll_create1");
 		return -1;
 	}
+
+	/* epoll struct setting */
 	ev.events = EPOLLIN | EPOLLOUT | EPOLLET;
-	ev.data.fd = skfd; 	// data fd == sockfd
-	if(epoll_ctl(efd, EPOLL_CTL_ADD, skfd, &ev) == -1){	// registered skfd to epoll event
+	ev.data.fd = skfd; 	// epoll fd == sockfd
+	/* registered skfd to epoll event */	
+	if(epoll_ctl(efd, EPOLL_CTL_ADD, skfd, &ev) == -1){
 		close(efd);
 		close(skfd);
 		perror("epoll_ctl_add");
@@ -132,7 +135,7 @@ int main(int argc, char **argv)
 	do{
 		/* 
 		 * Wait I/O event, like select
-		 * stored the event in `evp`
+		 * stored the event into `evp`
 		*/
 		nefd = epoll_wait(efd, evp, MAXEVENTS, -1);
 		if(nefd == -1){
@@ -176,7 +179,7 @@ int main(int argc, char **argv)
 				}   
 			}else{
 				// event `recv` trigger
-				if((evp[n].events & EPOLLIN) == EPOLLIN){
+				if(evp[n].events & EPOLLIN){
 					memset(buf, 0, sizeof(buf));
 					rlen = recv(evp[n].data.fd, buf, sizeof(buf)-1, 0);
 					if(rlen == -1){
@@ -186,9 +189,8 @@ int main(int argc, char **argv)
 					}
 					printf("Recv : %s (%d)\n", buf, rlen);
 				}
-		
 				// event `send` trigger
-				if((evp[n].events & EPOLLOUT) == EPOLLOUT){
+				if(evp[n].events & EPOLLOUT){
 					slen = send(evp[n].data.fd, "Here is Server", 14, 0);
 					if(slen == -1){
 						printf("Send Failed !\n");
@@ -204,7 +206,7 @@ int main(int argc, char **argv)
 					(evp[n].events & EPOLLOUT) != EPOLLOUT))
                 {
                     printf ("Unknown event: %d\n", evp[n].events);
-                    close (evp[n].data.fd);
+                    close(evp[n].data.fd);
 					return -1;
 				}
 			}

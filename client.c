@@ -60,7 +60,7 @@ int main(int argc, char **argv)
 	}
 	
 	skfd = sock_connect(argv[1], argv[2]);
-	if(skfd == -1){ exit(EXIT_FAILURE); }
+	if(skfd == -1) exit(EXIT_FAILURE); 
 
 	if(gethostname(hostnm, sizeof(hostnm)-1) == -1){
 		perror("get_host_name");
@@ -71,8 +71,9 @@ int main(int argc, char **argv)
 		sleep(1);
 		// send
 		time(&tm);
-		snprintf(buf, sizeof(buf), "From client %s %s", hostnm, ctime(&tm));	
-		slen = send(skfd, buf, strlen(buf), 0);	// flag == 0: message don't wait
+		snprintf(buf, sizeof(buf), "From client %s %s", hostnm, ctime(&tm));
+		// flag == 0: message don't wait
+		slen = send(skfd, buf, strlen(buf), 0);
 		if(slen != strlen(buf)){
 			printf("Send msg failed! slen (%d)\n", slen);
 			break;
@@ -80,7 +81,8 @@ int main(int argc, char **argv)
 	
 		// recv
 		memset(buf, 0, sizeof(buf));
-		rlen = recv(skfd, buf, sizeof(buf), 0);	// flag == 0: messgae don't wait
+		// flag == 0: message don't wait
+		rlen = recv(skfd, buf, sizeof(buf), 0);
 		if(rlen == -1){
 			printf("Recv message failed !\n");
 			break;

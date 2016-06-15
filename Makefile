@@ -1,6 +1,7 @@
 SRC_SVR = server.c
 SRC_CLT = client.c
-CFLAG = -std=gnu99
+CFLAG = -std=c99
+CFLAG += -D_GNU_SOURCE
 
 all: epoll_svr epoll_clt
 
